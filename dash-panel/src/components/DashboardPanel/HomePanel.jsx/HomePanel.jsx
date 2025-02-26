@@ -1,9 +1,9 @@
 import React from 'react'
+import SideNavbar from '../SideNavbar'
 
 const HomePanel = () => {
   return (
     <div>
-      <h2>Home</h2>
     </div>
   )
 }

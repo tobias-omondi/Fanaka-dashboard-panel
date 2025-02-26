@@ -1,12 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 import LoginForm from './components/Loginfolder/LoginForm';
-import HomePanel from './components/DashboardPanel/HomePanel.jsx/HomePanel';
 import Overview from './components/DashboardPanel/PagesLinks.jsx/Overview';
 import Admin from './components/DashboardPanel/PagesLinks.jsx/Admin';
 import Blog from './components/DashboardPanel/PagesLinks.jsx/Blog';
 import EventsDates from './components/DashboardPanel/PagesLinks.jsx/EventsDates';
 import Images from './components/DashboardPanel/PagesLinks.jsx/Images';
 import Videos from './components/DashboardPanel/PagesLinks.jsx/Videos';
+import SideNavbar from './components/DashboardPanel/SideNavbar';
+import HomePanel from './components/DashboardPanel/HomePanel.jsx/HomePanel';
 
 function App() {
 
@@ -18,13 +19,15 @@ function App() {
 
 
           {/* Dashboard Routes */}
-          <Route path='dashboard' element= {<HomePanel/>}>
-          <Route index element= {<Overview/>}/>
-          <Route path='admin' element= {<Admin/>}/>
-          <Route path='blog' element= {<Blog/>}/>
-          <Route path='eventsdates' element= {<EventsDates/>}/>
-          <Route path='images' element= {<Images/>}/>
-          <Route path='videos' element= {<Videos/>}/>
+          <Route path='dashboard' element= {<SideNavbar/>}>
+
+          <Route index element= {<HomePanel/>}/>
+          <Route path='dashpanel/overview' element= {<Overview/>}/>
+          <Route path='dashpanel/admin' element= {<Admin/>}/>
+          <Route path='dashpanel/blog' element= {<Blog/>}/>
+          <Route path='dashpanel/events&dates' element= {<EventsDates/>}/>
+          <Route path='dashpanel/images' element= {<Images/>}/>
+          <Route path='dashpanel/videos' element= {<Videos/>}/>
           </Route>
         </Routes>
       </div>
