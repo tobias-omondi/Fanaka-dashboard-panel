@@ -8,6 +8,7 @@ import Images from './components/DashboardPanel/PagesLinks.jsx/Images';
 import Videos from './components/DashboardPanel/PagesLinks.jsx/Videos';
 import SideNavbar from './components/DashboardPanel/SideNavbar';
 import HomePanel from './components/DashboardPanel/HomePanel.jsx/HomePanel';
+import Settings from './components/DashboardPanel/PagesLinks.jsx/Settings';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path='dashpanel/events&dates' element= {<EventsDates/>}/>
           <Route path='dashpanel/images' element= {<Images/>}/>
           <Route path='dashpanel/videos' element= {<Videos/>}/>
+          <Route path='dashpanel/settings' element= {<Settings/>}/>
           </Route>
         </Routes>
       </div>
