@@ -4,11 +4,11 @@ import Overview from './components/DashboardPanel/PagesLinks.jsx/Overview';
 import Admin from './components/DashboardPanel/PagesLinks.jsx/Admin';
 import Blog from './components/DashboardPanel/PagesLinks.jsx/Blog';
 import EventsDates from './components/DashboardPanel/PagesLinks.jsx/EventsDates';
-import Images from './components/DashboardPanel/PagesLinks.jsx/Images';
 import Videos from './components/DashboardPanel/PagesLinks.jsx/Videos';
 import SideNavbar from './components/DashboardPanel/SideNavbar';
 import HomePanel from './components/DashboardPanel/HomePanel.jsx/HomePanel';
 import Settings from './components/DashboardPanel/PagesLinks.jsx/Settings';
+import Images from './components/DashboardPanel/PagesLinks.jsx/Images';
 
 function App() {
 

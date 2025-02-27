@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import SideNavbar from '../SideNavbar';
+import { MdDelete, MdEdit } from 'react-icons/md';
 
-const Images = () => {
+const GalleryImages = () => {
   const [images, setImages] = useState([]); // State to store images
   const [newImage, setNewImage] = useState({ title: '', description: '', image: '' }); // State for new image
   const [editingImage, setEditingImage] = useState(null); // State for editing an image
@@ -9,7 +9,7 @@ const Images = () => {
   // Fetch all images
   const fetchImages = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/gallery/');
+      const response = await fetch('http://127.0.0.1:8000/images/');
       const data = await response.json();
       setImages(data);
     } catch (error) {
@@ -20,7 +20,7 @@ const Images = () => {
   // Create a new image
   const createImage = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/gallery/', {
+      const response = await fetch('http://127.0.0.1:8000/images/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const Images = () => {
   // Update an image
   const updateImage = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/gallery/${id}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/images/${id}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ const Images = () => {
   // Delete an image
   const deleteImage = async (id) => {
     try {
-      await fetch(`http://127.0.0.1:8000/gallery/${id}/`, {
+      await fetch(`http://127.0.0.1:8000/images/${id}/`, {
         method: 'DELETE',
       });
       setImages(images.filter(image => image.id !== id)); // Remove the image from the list
@@ -72,7 +72,6 @@ const Images = () => {
 
   return (
     <div>
-      <SideNavbar />
       <div className='w-2.5 xl md:w-5xl'>
         <h2 className='text-2xl shadow-lg text-end p-5 font-bold text-gray-500 bg-orange-500 cursor-pointer hover:shadow-2xl hover:delay-200 hover:transition hover:duration-300 ease-in-out'>
           Images
@@ -133,7 +132,7 @@ const Images = () => {
       </div>
 
       {/* Display images */}
-      <div className="p-4">
+      <div className="p-4 grid md:grid-cols-5 sm:grid-cols-2">
         {images.map((image) => (
           <div key={image.id} className="mb-4 p-4 border border-gray-300 rounded">
             <img
@@ -148,13 +147,13 @@ const Images = () => {
                 onClick={() => setEditingImage(image)}
                 className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
               >
-                Edit
+                <MdEdit/>
               </button>
               <button
                 onClick={() => deleteImage(image.id)}
                 className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
-                Delete
+                <MdDelete/>
               </button>
             </div>
           </div>
@@ -164,4 +163,4 @@ const Images = () => {
   );
 };
 
-export default Images;
+export default GalleryImages;
