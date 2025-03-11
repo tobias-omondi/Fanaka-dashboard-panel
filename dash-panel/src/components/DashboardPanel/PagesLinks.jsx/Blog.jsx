@@ -97,7 +97,7 @@ const Blog = () => {
         <div className='flex flex-row'>
         <button
           onClick={editingBlog ? () => updateBlog(editingBlog.id) : createBlog}
-          className="bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-600"
+          className="bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-600 cursor-pointer"
         >
           {editingBlog ? <AiOutlineEdit size={20} /> : <AiOutlinePlus size={20} />}
           {editingBlog ? 'Update' : 'Create'}
@@ -105,7 +105,7 @@ const Blog = () => {
         {editingBlog && (
           <button
             onClick={() => setEditingBlog(null)}
-            className="ml-2 gap-2 bg-red-500 text-white px-4 py-2 rounded flex items-center  hover:bg-red-600"
+            className="ml-2 gap-2 bg-red-500 text-white px-4 py-2 rounded flex items-center  hover:bg-red-600 cursor-pointer"
           >
             <IoMdClose size={20} /> Cancel
           </button>
@@ -123,13 +123,13 @@ const Blog = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setEditingBlog(blog)}
-                className="bg-orange-500 text-white p-2 rounded hover:bg-yellow-600"
+                className="bg-orange-500 text-white p-2 rounded hover:bg-yellow-600 cursor-pointer"
               >
                 <AiOutlineEdit size={20} />
               </button>
               <button
                 onClick={() => deleteBlog(blog.id)}
-                className="bg-red-600 text-white p-2 rounded hover:bg-red-500"
+                className="bg-red-600 text-white p-2 rounded hover:bg-red-500 cursor-pointer"
               >
                 <MdDelete size={20} />
               </button>

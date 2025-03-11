@@ -3,54 +3,64 @@ import { IoMdClose } from 'react-icons/io';
 import { MdDelete, MdEdit } from 'react-icons/md';
 
 const EventsDates = () => {
-  const [events, setEvents] = useState([]); // State to store events
-  const [newEvent, setNewEvent] = useState({ title: '', description: '', event_date: '', image: '' }); // State for new event
-  const [editingEvent, setEditingEvent] = useState(null); // State for editing an event
+  const [events, setEvents] = useState([]); 
+  const [newEvent, setNewEvent] = useState({ title: '', description: '', event_date: '', image: null }); 
+  const [editingEvent, setEditingEvent] = useState(null); 
 
-  // Fetch all events
+ 
   const fetchEvents = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/events/');
       const data = await response.json();
       setEvents(data);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      // console.error('Error fetching events:', error);
     }
   };
 
   // Create a new event
   const createEvent = async () => {
     try {
+      const formData = new FormData();
+      formData.append('title', newEvent.title);
+      formData.append('description', newEvent.description);
+      formData.append('event_date', newEvent.event_date);
+      if (newEvent.image) {
+        formData.append('image', newEvent.image); // Append the image file
+      }
+
       const response = await fetch('http://127.0.0.1:8000/events/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newEvent),
+        body: formData, // Send FormData instead of JSON
       });
       const data = await response.json();
       setEvents([...events, data]); // Add new event to the list
-      setNewEvent({ title: '', description: '', event_date: '', image: '' }); // Reset form
+      setNewEvent({ title: '', description: '', event_date: '', image: null }); // Reset form
     } catch (error) {
-      console.error('Error creating event:', error);
+      // console.error('Error creating event:', error);
     }
   };
 
   // Update an event
   const updateEvent = async (id) => {
     try {
+      const formData = new FormData();
+      formData.append('title', editingEvent.title);
+      formData.append('description', editingEvent.description);
+      formData.append('event_date', editingEvent.event_date);
+      if (editingEvent.image) {
+        formData.append('image', editingEvent.image); // Append the image file
+      }
+
       const response = await fetch(`http://127.0.0.1:8000/events/${id}/`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editingEvent),
+        body: formData, // Send FormData instead of JSON
       });
       const data = await response.json();
       setEvents(events.map(event => (event.id === id ? data : event))); // Update the event in the list
       setEditingEvent(null); // Reset editing state
     } catch (error) {
-      console.error('Error updating event:', error);
+      // console.error('Error updating event:', error);
     }
   };
 
@@ -62,7 +72,7 @@ const EventsDates = () => {
       });
       setEvents(events.filter(event => event.id !== id)); // Remove the event from the list
     } catch (error) {
-      console.error('Error deleting event:', error);
+      // console.error('Error deleting event:', error);
     }
   };
 
@@ -71,6 +81,16 @@ const EventsDates = () => {
     fetchEvents();
   }, []);
 
+  // Handle file input change
+  const handleImageChange = (e, isEditing) => {
+    const file = e.target.files[0];
+    if (isEditing) {
+      setEditingEvent({ ...editingEvent, image: file });
+    } else {
+      setNewEvent({ ...newEvent, image: file });
+    }
+  };
+
   return (
     <div>
       <div className='w-2.5 xl md:w-5xl'>
@@ -78,6 +98,8 @@ const EventsDates = () => {
           Events & Dates
         </h2>
       </div>
+
+      
 
       {/* Form to create or edit an event */}
       <div className="p-4">
@@ -114,57 +136,60 @@ const EventsDates = () => {
               ? setEditingEvent({ ...editingEvent, event_date: e.target.value })
               : setNewEvent({ ...newEvent, event_date: e.target.value })
           }
-          className="block w-full p-2 mb-4 border border-gray-300 rounded"
+          className="block w-full p-2 mb-4 border border-gray-300 rounded text-gray-600"
         />
         <input
-          type="text"
-          placeholder="Image URL"
-          value={editingEvent ? editingEvent.image : newEvent.image}
-          onChange={(e) =>
-            editingEvent
-              ? setEditingEvent({ ...editingEvent, image: e.target.value })
-              : setNewEvent({ ...newEvent, image: e.target.value })
-          }
-          className="block w-full p-2 mb-4 border border-gray-300 rounded"
+          type="file"
+          onChange={(e) => handleImageChange(e, !!editingEvent)} // Handle file input
+          className="block w-full p-2 mb-4 border border-gray-300 rounded text-gray-600 cursor-pointer"
         />
         <div className='flex flex-row'>
-        <button
-          onClick={editingEvent ? () => updateEvent(editingEvent.id) : createEvent}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          {editingEvent ? 'Update' : 'Create'}
-        </button>
-        {editingEvent && (
           <button
-            onClick={() => setEditingEvent(null)}
-            className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex flex-row"
+            onClick={editingEvent ? () => updateEvent(editingEvent.id) : createEvent}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
           >
-            <IoMdClose /> Cancel
+            {editingEvent ? 'Update' : 'Create'}
           </button>
-        )}
+          {editingEvent && (
+            <button
+              onClick={() => setEditingEvent(null)}
+              className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex flex-row cursor-pointer"
+            >
+              <IoMdClose /> Cancel
+            </button>
+          )}
         </div>
       </div>
+
+
+
 
       {/* Display events */}
       <div className="p-4">
         {events.map((event) => (
           <div key={event.id} className="mb-4 p-4 border border-gray-300 rounded">
-            <img src={`http://127.0.0.1:8000${event.image}`} alt={event.title} className="w-48 h-36 object-cover mb-4 rounded" />
+            {event.image && (
+              <img
+                src={`http://127.0.0.1:8000${event.image}`}
+                alt={event.title}
+                className="w-48 h-36 object-cover mb-4 rounded"
+              />
+            )}
             <h3 className="text-xl font-bold">{event.title}</h3>
             <p className="text-gray-700">{event.description}</p>
             <p className="text-gray-500">Event Date: {event.event_date}</p>
             <div className="mt-2">
               <button
                 onClick={() => setEditingEvent(event)}
-                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-yellow-600 cursor-pointer"
               >
-                <MdEdit/>
+                <MdEdit />
               </button>
               <button
                 onClick={() => deleteEvent(event.id)}
-                className="ml-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500"
+                className="ml-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 cursor-pointer"
               >
-                <MdDelete/>
+                <MdDelete />
               </button>
             </div>
           </div>

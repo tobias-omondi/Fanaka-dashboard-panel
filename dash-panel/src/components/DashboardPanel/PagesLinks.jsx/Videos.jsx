@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const Videos = () => {
   const [videos, setVideos] = useState([]); // State to store videos
-  const [newVideo, setNewVideo] = useState({ title: '', description: '', video: '' }); // State for new video
+  const [newVideo, setNewVideo] = useState({ title: '', description: '', video: null }); // State for new video
   const [editingVideo, setEditingVideo] = useState(null); // State for editing a video
 
   // Fetch all videos
@@ -19,16 +19,20 @@ const Videos = () => {
   // Create a new video
   const createVideo = async () => {
     try {
+      const formData = new FormData();
+      formData.append('title', newVideo.title);
+      formData.append('description', newVideo.description);
+      if (newVideo.video) {
+        formData.append('video', newVideo.video); // Append the video file
+      }
+
       const response = await fetch('http://127.0.0.1:8000/videos/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newVideo),
+        body: formData, // Send FormData instead of JSON
       });
       const data = await response.json();
       setVideos([...videos, data]); // Add new video to the list
-      setNewVideo({ title: '', description: '', video: '' }); // Reset form
+      setNewVideo({ title: '', description: '', video: null }); // Reset form
     } catch (error) {
       console.error('Error creating video:', error);
     }
@@ -37,12 +41,16 @@ const Videos = () => {
   // Update a video
   const updateVideo = async (id) => {
     try {
+      const formData = new FormData();
+      formData.append('title', editingVideo.title);
+      formData.append('description', editingVideo.description);
+      if (editingVideo.video) {
+        formData.append('video', editingVideo.video); // Append the video file
+      }
+
       const response = await fetch(`http://127.0.0.1:8000/videos/${id}/`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editingVideo),
+        body: formData, // Send FormData instead of JSON
       });
       const data = await response.json();
       setVideos(videos.map(video => (video.id === id ? data : video))); // Update the video in the list
@@ -68,6 +76,16 @@ const Videos = () => {
   useEffect(() => {
     fetchVideos();
   }, []);
+
+  // Handle file input change
+  const handleVideoChange = (e, isEditing) => {
+    const file = e.target.files[0];
+    if (isEditing) {
+      setEditingVideo({ ...editingVideo, video: file });
+    } else {
+      setNewVideo({ ...newVideo, video: file });
+    }
+  };
 
   return (
     <div>
@@ -104,26 +122,21 @@ const Videos = () => {
           className="block w-full p-2 mb-4 border border-gray-300 rounded"
         />
         <input
-          type="text"
-          placeholder="Video URL"
-          value={editingVideo ? editingVideo.video : newVideo.video}
-          onChange={(e) =>
-            editingVideo
-              ? setEditingVideo({ ...editingVideo, video: e.target.value })
-              : setNewVideo({ ...newVideo, video: e.target.value })
-          }
+          type="file"
+          accept="video/*" // Allow only video files
+          onChange={(e) => handleVideoChange(e, !!editingVideo)} // Handle file input
           className="block w-full p-2 mb-4 border border-gray-300 rounded"
         />
         <button
           onClick={editingVideo ? () => updateVideo(editingVideo.id) : createVideo}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
         >
           {editingVideo ? 'Update' : 'Create'}
         </button>
         {editingVideo && (
           <button
             onClick={() => setEditingVideo(null)}
-            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 cursor-pointer"
           >
             Cancel
           </button>
@@ -144,13 +157,13 @@ const Videos = () => {
             <div className="mt-2">
               <button
                 onClick={() => setEditingVideo(video)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 cursor-pointer"
               >
                 Edit
               </button>
               <button
                 onClick={() => deleteVideo(video.id)}
-                className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
               >
                 Delete
               </button>

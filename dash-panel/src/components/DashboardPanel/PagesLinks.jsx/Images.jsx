@@ -3,7 +3,7 @@ import { MdDelete, MdEdit } from 'react-icons/md';
 
 const GalleryImages = () => {
   const [images, setImages] = useState([]); // State to store images
-  const [newImage, setNewImage] = useState({ title: '', description: '', image: '' }); // State for new image
+  const [newImage, setNewImage] = useState({ title: '', description: '', image: null }); // State for new image
   const [editingImage, setEditingImage] = useState(null); // State for editing an image
 
   // Fetch all images
@@ -20,16 +20,20 @@ const GalleryImages = () => {
   // Create a new image
   const createImage = async () => {
     try {
+      const formData = new FormData();
+      formData.append('title', newImage.title);
+      formData.append('description', newImage.description);
+      if (newImage.image) {
+        formData.append('image', newImage.image); // Append the image file
+      }
+
       const response = await fetch('http://127.0.0.1:8000/images/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newImage),
+        body: formData, // Send FormData instead of JSON
       });
       const data = await response.json();
       setImages([...images, data]); // Add new image to the list
-      setNewImage({ title: '', description: '', image: '' }); // Reset form
+      setNewImage({ title: '', description: '', image: null }); // Reset form
     } catch (error) {
       console.error('Error creating image:', error);
     }
@@ -38,12 +42,16 @@ const GalleryImages = () => {
   // Update an image
   const updateImage = async (id) => {
     try {
+      const formData = new FormData();
+      formData.append('title', editingImage.title);
+      formData.append('description', editingImage.description);
+      if (editingImage.image) {
+        formData.append('image', editingImage.image); // Append the image file
+      }
+
       const response = await fetch(`http://127.0.0.1:8000/images/${id}/`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editingImage),
+        body: formData, // Send FormData instead of JSON
       });
       const data = await response.json();
       setImages(images.map(image => (image.id === id ? data : image))); // Update the image in the list
@@ -69,6 +77,16 @@ const GalleryImages = () => {
   useEffect(() => {
     fetchImages();
   }, []);
+
+  // Handle file input change
+  const handleImageChange = (e, isEditing) => {
+    const file = e.target.files[0];
+    if (isEditing) {
+      setEditingImage({ ...editingImage, image: file });
+    } else {
+      setNewImage({ ...newImage, image: file });
+    }
+  };
 
   return (
     <div>
@@ -105,26 +123,20 @@ const GalleryImages = () => {
           className="block w-full p-2 mb-4 border border-gray-300 rounded"
         />
         <input
-          type="text"
-          placeholder="Image URL"
-          value={editingImage ? editingImage.image : newImage.image}
-          onChange={(e) =>
-            editingImage
-              ? setEditingImage({ ...editingImage, image: e.target.value })
-              : setNewImage({ ...newImage, image: e.target.value })
-          }
-          className="block w-full p-2 mb-4 border border-gray-300 rounded"
+          type="file"
+          onChange={(e) => handleImageChange(e, !!editingImage)} // Handle file input
+          className="block w-full p-2 mb-4 border border-gray-300 rounded cursor-pointer"
         />
         <button
           onClick={editingImage ? () => updateImage(editingImage.id) : createImage}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
         >
           {editingImage ? 'Update' : 'Create'}
         </button>
         {editingImage && (
           <button
             onClick={() => setEditingImage(null)}
-            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 cursor-pointer"
           >
             Cancel
           </button>
@@ -145,13 +157,13 @@ const GalleryImages = () => {
             <div className="mt-2">
               <button
                 onClick={() => setEditingImage(image)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 cursor-pointer"
               >
                 <MdEdit/>
               </button>
               <button
                 onClick={() => deleteImage(image.id)}
-                className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
               >
                 <MdDelete/>
               </button>
